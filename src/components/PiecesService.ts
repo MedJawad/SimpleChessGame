@@ -13,80 +13,92 @@ import bK from "./pieces/bk.png";
 
 export interface PieceType {
   name: string;
+  color: string;
   presentation: string;
   image: string;
-  moves: string[];
+  moves: number[];
 }
 
 export const WHITE_PAWN = {
   name: "White Pawn",
+  color: "WHITE",
   presentation: "P",
   image: wP,
-  moves: [],
+  moves: [8],
 };
-
 export const BLACK_PAWN = {
   name: "Black Pawn",
+  color: "BLACK",
   presentation: "p",
   image: bP,
-  moves: [],
+  moves: [-8],
 };
 export const WHITE_KNIGHT = {
   name: "White Knight",
+  color: "WHITE",
   presentation: "N",
   image: wN,
-  moves: [],
+  moves: [6, 10, -6, -10, -15, -17, 15, 17],
 };
 export const BLACK_KNIGHT = {
   name: "Black Knight",
+  color: "BLACK",
   presentation: "n",
   image: bN,
-  moves: [],
+  moves: [6, 10, -6, -10, -15, -17, 15, 17],
 };
 export const WHITE_ROOK = {
   name: "White Rook",
+  color: "WHITE",
   presentation: "R",
   image: wR,
-  moves: [],
+  moves: [8, 16, 24, 32, 40, 48, 56, 64, -8, -16, -24, -32, -40, -48, -56, -64],
 };
 export const BLACK_ROOK = {
   name: "Black Rook",
+  color: "BLACK",
   presentation: "r",
   image: bR,
-  moves: [],
+  moves: [8, 16, 24, 32, 40, 48, 56, 64, -8, -16, -24, -32, -40, -48, -56, -64],
 };
 export const WHITE_BISHOP = {
   name: "White Bishop",
+  color: "WHITE",
   presentation: "B",
   image: wB,
   moves: [],
 };
 export const BLACK_BISHOP = {
   name: "Black Bishop",
+  color: "BLACK",
   presentation: "b",
   image: bB,
   moves: [],
 };
 export const WHITE_QUEEN = {
   name: "White Queen",
+  color: "WHITE",
   presentation: "Q",
   image: wQ,
   moves: [],
 };
 export const BLACK_QUEEN = {
   name: "Black Queen",
+  color: "BLACK",
   presentation: "q",
   image: bQ,
   moves: [],
 };
 export const WHITE_KING = {
   name: "White King",
+  color: "WHITE",
   presentation: "K",
   image: wK,
   moves: [],
 };
 export const BLACK_KING = {
   name: "Black King",
+  color: "BLACK",
   presentation: "k",
   image: bK,
   moves: [],
@@ -122,3 +134,13 @@ export const isSameColor = (piece1: string, piece2: string) => {
 
   return false;
 };
+
+interface PositionCoordinates {
+  positionX: number;
+  positionY: number;
+}
+
+export const isPositionsEqual = (
+  posA: PositionCoordinates,
+  posB: PositionCoordinates
+) => posA.positionX === posB.positionX && posA.positionY === posB.positionY;

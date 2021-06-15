@@ -4,17 +4,14 @@ interface PieceProps {
   img: string;
   name: string;
   isSelected: boolean;
-  select: any;
 }
 
-const Piece = ({ img, name, isSelected, select }: PieceProps) => {
+const Piece = ({ img, name, isSelected }: PieceProps) => {
   return (
     <div
       style={{
-        cursor: "pointer",
         backgroundColor: isSelected ? "yellowgreen" : "transparent",
       }}
-      onClick={select}
     >
       <img
         style={{ maxHeight: "60px", maxWidth: "60px" }}

@@ -7,7 +7,6 @@ interface CellProps {
   positionX: number;
   positionY: number;
   piece: PieceType | undefined;
-  select: any;
   cellClickHandle: any;
   isSelected: boolean;
 }
@@ -16,7 +15,6 @@ const Cell = ({
   positionX,
   positionY,
   isSelected,
-  select,
   piece,
   cellClickHandle,
 }: CellProps) => {
@@ -24,6 +22,7 @@ const Cell = ({
     <Paper
       style={{
         padding: 10,
+        cursor: "pointer",
         height: "80px",
         width: "80px",
         display: "flex",
@@ -32,15 +31,10 @@ const Cell = ({
         backgroundColor:
           (positionX + positionY) % 2 === 0 ? "burlywood" : "beige",
       }}
-      onClick={() => (piece ? null : cellClickHandle(positionX, positionY))}
+      onClick={() => cellClickHandle(positionX, positionY, piece)}
     >
       {piece && (
-        <Piece
-          img={piece.image}
-          name={piece.name}
-          isSelected={isSelected}
-          select={() => select(positionX, positionY)}
-        />
+        <Piece img={piece.image} name={piece.name} isSelected={isSelected} />
       )}
     </Paper>
   );

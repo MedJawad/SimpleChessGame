@@ -1,7 +1,12 @@
 import React, { CSSProperties, useState } from "react";
 import { Grid } from "@material-ui/core";
 import Cell from "./Cell";
-import { getPieceByPresentation, isSameColor } from "./PiecesService";
+import {
+  getPieceByPresentation,
+  isPositionsEqual,
+  isSameColor,
+  PieceType,
+} from "./PiecesService";
 
 const ChessBoard = () => {
   const [boardState, setboardState] = useState(
@@ -18,47 +23,60 @@ const ChessBoard = () => {
     ]
   );
 
+  const [turn, setturn] = useState(1);
+
   const [selectedPiece, setselectedPiece] = useState({
     positionX: -1,
     positionY: -1,
   });
 
-  const selectPiece = (positionX: number, positionY: number) => {
-    const originalPiece =
-      selectedPiece.positionX !== -1 && selectedPiece.positionY !== -1
-        ? boardState[selectedPiece.positionX][selectedPiece.positionY]
-        : "";
-    const target = boardState[positionX][positionY];
-    if (
-      positionX === selectedPiece.positionX &&
-      positionY === selectedPiece.positionY
-    ) {
-      setselectedPiece({
-        positionX: -1,
-        positionY: -1,
-      });
-    } else if (!isSameColor(target, originalPiece)) {
-      setselectedPiece({ positionX, positionY });
-      emptyCellClickHandle(positionX, positionY);
-    } else {
-      setselectedPiece({ positionX, positionY });
-    }
-  };
-
-  const emptyCellClickHandle = (positionX: number, positionY: number) => {
-    if (selectedPiece.positionX !== -1 && selectedPiece.positionY !== -1) {
+  const cellClickHandle = (
+    positionX: number,
+    positionY: number,
+    occupyingPiece: PieceType | null
+  ) => {
+    const isAPieceSelected = !isPositionsEqual(selectedPiece, {
+      positionX: -1,
+      positionY: -1,
+    });
+    if (isAPieceSelected) {
+      const originallySelected =
+        boardState[selectedPiece.positionX][selectedPiece.positionY];
+      if (
+        occupyingPiece &&
+        isPositionsEqual(selectedPiece, { positionX, positionY })
+      ) {
+        setselectedPiece({ positionX: -1, positionY: -1 });
+        return;
+      }
+      if (
+        occupyingPiece &&
+        isSameColor(occupyingPiece.presentation, originallySelected)
+      ) {
+        setselectedPiece({ positionX, positionY });
+        return;
+      }
+      //Empty or opposite color, check for legit moves etc
+      const moveDiff =
+        selectedPiece.positionY -
+        positionY +
+        (selectedPiece.positionX - positionX) * 8;
+      console.log(moveDiff);
+      if (!getPieceByPresentation(originallySelected)?.moves.includes(moveDiff))
+        return;
       const newBoardState = boardState.map((row) => row.map((cell) => cell));
-      const movingPiece =
-        newBoardState[selectedPiece.positionX][selectedPiece.positionY];
-      const target = newBoardState[positionX][positionY];
-
-      if (isSameColor(target, movingPiece)) return;
-
       newBoardState[selectedPiece.positionX][selectedPiece.positionY] = "0";
-      newBoardState[positionX][positionY] = movingPiece;
-
+      newBoardState[positionX][positionY] = originallySelected;
       setboardState(newBoardState);
       setselectedPiece({ positionX: -1, positionY: -1 });
+      setturn(turn + 1);
+    } else if (occupyingPiece) {
+      // check if it's the turn for the piece to be selected
+      const isLegitimateTurnForColor =
+        occupyingPiece.color === "WHITE" ? turn % 2 === 1 : turn % 2 === 0;
+      if (isLegitimateTurnForColor) {
+        setselectedPiece({ positionX, positionY });
+      }
     }
   };
 
@@ -74,9 +92,8 @@ const ChessBoard = () => {
               selectedPiece.positionX === rowNumber &&
               selectedPiece.positionY === index
             }
-            select={selectPiece}
             piece={getPieceByPresentation(piecePresentation)}
-            cellClickHandle={emptyCellClickHandle}
+            cellClickHandle={cellClickHandle}
           />
         ))}
       </div>
@@ -84,6 +101,7 @@ const ChessBoard = () => {
   };
   return (
     <div>
+      <h2>Black {turn % 2 === 0 && "✨"}</h2>
       <Grid container spacing={1}>
         <Grid container justify="center" spacing={1}>
           {boardState.map((value, index) => (
@@ -91,6 +109,7 @@ const ChessBoard = () => {
           ))}
         </Grid>
       </Grid>
+      <h2>White {turn % 2 === 1 && "✨"}</h2>
     </div>
   );
 };
